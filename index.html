@@ -21,7 +21,7 @@
     }
 
     img {
-      width: 15%;
+      width: 9%;
     }
 
     canvas {
@@ -44,15 +44,17 @@
       <div class="row">
         <div class="col-lg-12 text-center" >
           <!-- Link to logo file here from full project -->
-          <img src="img/logo.png" alt="logo">
-          <h1>QuikNode Explorer</h1>
+          <img src="/binary_res?q=editoresWeb/Explorador-de-archivos/img/logo.png" alt="logo">
+          <h1>UI de QuikNode Explorer</h1><br>
+          <h3><a href="/{java.impl.q}">{java.impl.q}</a></h3>
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Block #</th>
-                <th scope="col">Hash</th>
-                <th scope="col">Gas_used</th>
-                <th scope="col">Timestamp</th>
+                <th scope="col"></th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Ultima Modificacion</th>
+                <th scope="col">Tamaño</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -75,21 +77,44 @@
 
     <!--Explorer sccript which connects to node and gets values from blocks-->
     <script>
-      var provider = 'ADD_YOUR_QUIKNODE_HERE'; // Add your quiknode HTTP provider link here
-      var web3Provider = new Web3.providers.HttpProvider(provider);
-      var web3 = new Web3(web3Provider);
-      web3.eth.getBlockNumber().then((result) => {
-        for (var i = 0; i < 10; i++) {
-          web3.eth.getBlock(result - i).then((block)=>{
-            console.log("Latest Ethereum Block is ",block);
-            var number = block.number;
-            var hash = block.hash;
-            var time = block.timestamp;
-            var gas = block.gasUsed;
-            $('tbody').append("<tr><td>" + number + "</td><td>" + hash + "</td><td>" + gas + "</td><td>" + time + "</td></tr>");
-          });
-        }
-      });
+	async function update() {
+		let url = '/_explorador?q={java.impl.q}';
+		
+		let res = await fetch(url);
+		let json = await res.json();
+		json.forEach(data => {
+        	var icon = null;
+        	var s_ize = null;
+        	var path = null;
+        	if(data.isDir){
+        		icon = "/binary_res?q=imgs/dir.png";
+        		s_ize = "- - -";
+        		path = "/" + data.path;
+        	}
+
+        	else
+        	{
+        		icon = "/binary_res?q=imgs/file.png";
+        		s_ize = data.size + " bytes";
+        		path = "/binary_file?q=" + data.path;
+
+        	}
+        	if(data.isBack)
+        		icon = "/binary_res?q=imgs/back.png";
+        	
+        	$('tbody').append("<tr>" +
+        			
+        			"<td>"+"<a href=\""+ path +"\">" + "<img src=\"" + icon + "\"/></a></td>"+
+        			"<td>"+"<a href=\""+ path +"\">" + data.name + "</a></td>" +
+        			"<td>" + data.lastModified + "</td>" +
+        			"<td>" + s_ize + "</td>" +
+        			"</tr>");
+        });
+    }
+ 
+	update();
+      //     $('tbody').append("<tr><td>" + number + "</td><td>" + hash + "</td><td>" + gas + "</td><td>" + time + "</td></tr>");
+
     </script>
 
     <!--Background particles-->
